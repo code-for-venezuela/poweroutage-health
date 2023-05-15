@@ -1,9 +1,14 @@
-import { NextApiResponse } from 'next';
+import {NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
 const ignoredDevices = ['damp-sky'];
 
+type Device = {
+  name: string,
+  isOnline: boolean;
+};
 export default async function handler(
+  _: NextApiRequest,
   response: NextApiResponse,
 ) {
   try {
@@ -15,25 +20,25 @@ export default async function handler(
     });
 
     // Extract the device information from the response
-    const devices = res.data.d[0].owns__device.map((item) => {
+    const devices = res.data.d[0].owns__device.map((item: { is_online: string; device_name: boolean; }) => {
       const { is_online, device_name } = item;
-      return { is_online, device_name };
+      return { isOnline: is_online, name: device_name };
     });
 
     // Check if any device is offline
-    const filteredDevices = devices.filter((device) => !ignoredDevices.includes(device.device_name));
+    const filteredDevices = devices.filter((device:Device) => !ignoredDevices.includes(device.name));
 
-    const offlineDevices = filteredDevices.filter((device) => !device.is_online);
+    const offlineDevices = filteredDevices.filter((device:Device) => !device.isOnline);
 
     if (offlineDevices.length > 0) {
       // Send notification to Slack channel using webhook integration
-      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL; 
+      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || ''; 
 
       const slackMessage = {
         text: 'The following devices are currently offline:',
-        attachments: offlineDevices.map((device) => ({
+        attachments: offlineDevices.map((device:Device) => ({
           color: 'danger',
-          text: `${device.device_name}`,
+          text: `${device.name}`,
         })),
       };
 
