@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-const ignoredDevices = ['damp-sky', 'nameless-zombie', 'funny-violet', 'morning-apple'];
+const ignoredDevices = ['damp-sky', 'nameless-zombie', 'funny-violet', 'morning-apple', 'smart-glitter', 'defiant-fire'];
 
 type Device = {
   name: string,
@@ -51,9 +51,9 @@ export default async function handler(
       const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || ''; 
 
       const slackMessage = {
-        text: 'The following devices are currently offline:',
+        text: 'The following devices are currently online:',
         attachments: onlineDevices.map((device:Device) => ({
-          color: 'green',
+          color: '#097969',
           text: `${device.name}`,
         })),
       };
