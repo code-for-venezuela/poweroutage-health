@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-const ignoredDevices = ['damp-sky', 'nameless-zombie', 'funny-violet', 'morning-apple', 'smart-glitter', 'defiant-fire'];
+const ignoredDevices = ['damp-sky', 'nameless-zombie', 'morning-apple'];
 
 type Device = {
   name: string,
