@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
-const ignoredDevices = ['damp-sky', 'nameless-zombie', 'morning-apple'];
+const ignoredDevices = ['damp-sky', 'nameless-zombie', 'morning-apple', 'frosty-desert', 'complex-sky'];
 
 type Device = {
   name: string,
@@ -46,20 +46,20 @@ export default async function handler(
       await axios.post(slackWebhookUrl, slackMessage);
     }
 
-    if (onlineDevices.length > 0) {
-      // Send notification to Slack channel using webhook integration
-      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || ''; 
+    // if (onlineDevices.length > 0) {
+    //   // Send notification to Slack channel using webhook integration
+    //   const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || ''; 
 
-      const slackMessage = {
-        text: 'The following devices are currently online:',
-        attachments: onlineDevices.map((device:Device) => ({
-          color: '#097969',
-          text: `${device.name}`,
-        })),
-      };
+    //   const slackMessage = {
+    //     text: 'The following devices are currently online:',
+    //     attachments: onlineDevices.map((device:Device) => ({
+    //       color: '#097969',
+    //       text: `${device.name}`,
+    //     })),
+    //   };
 
-      await axios.post(slackWebhookUrl, slackMessage);
-    }
+    //   await axios.post(slackWebhookUrl, slackMessage);
+    // }
 
 
     const responseBody = {
