@@ -120,7 +120,7 @@ async function getFrequentOfflineDevices(): Promise<BalenaDeviceStatus24hReport[
       SELECT deviceId as name, COUNT(*) as offlineCount
       FROM DeviceStatus
       WHERE healthStatus = 'OFFLINE'
-      AND createdAt >= NOW() - INTERVAL 1 DAY
+      AND createdAt >= NOW() - INTERVAL 36 HOUR
       GROUP BY deviceId
     `;
 
