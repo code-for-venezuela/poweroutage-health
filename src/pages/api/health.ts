@@ -1,12 +1,22 @@
-import {NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { PrismaClient } from '@prisma/client'
+
 import axios from 'axios';
 
-const ignoredDevices = [ 'nameless-zombie', 'morning-apple',  'complex-sky'];
+const prisma = new PrismaClient()
+const ignoredDevices = ['nameless-zombie', 'morning-apple'];
 
-type Device = {
+type BalenaDeviceStatus = {
   name: string,
   isOnline: boolean;
 };
+
+type BalenaDeviceStatus24hReport = {
+  name: string,
+  date: String,
+  offlineCount: number,
+};
+
 export default async function handler(
   _: NextApiRequest,
   response: NextApiResponse,
@@ -25,21 +35,24 @@ export default async function handler(
       return { isOnline: is_online, name: device_name };
     });
 
-    // Check if any device is offline
-    const filteredDevices = devices.filter((device:Device) => !ignoredDevices.includes(device.name));
+    saveDeviceStatuses(devices)
 
-    const offlineDevices = filteredDevices.filter((device:Device) => !device.isOnline);
-    const onlineDevices = filteredDevices.filter((device:Device) => device.isOnline);
+    const last24hReport = await getFrequentOfflineDevices()
+
+    // Check if any device is offline
+    const filteredDevices = devices.filter((device: BalenaDeviceStatus24hReport) => !ignoredDevices.includes(device.name));
+    const offlineDevices = filteredDevices.filter((device: BalenaDeviceStatus24hReport) => device.offlineCount >= 3);
+    //const onlineDevices = filteredDevices.filter((device:Device) => device.isOnline);
 
     if (offlineDevices.length > 0) {
       // Send notification to Slack channel using webhook integration
-      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || ''; 
+      const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || '';
 
       const slackMessage = {
-        text: 'The following devices are currently offline:',
-        attachments: offlineDevices.map((device:Device) => ({
+        text: 'The following devices have been offline in the last 24 hours:',
+        attachments: offlineDevices.map((device: BalenaDeviceStatus24hReport) => ({
           color: 'danger',
-          text: `${device.name}`,
+          text: `${device.name} has been offline ${device.name} times in the last 24 hours`,
         })),
       };
 
@@ -64,12 +77,92 @@ export default async function handler(
 
     const responseBody = {
       devices: devices,
+      last24hReport: last24hReport,
     };
 
+    await prisma.$disconnect()
     response.setHeader('Content-Type', 'application/json');
     response.status(200).json(responseBody);
   } catch (error) {
     console.error('Error retrieving devices from balena.io:', error);
     response.status(500).json({ error: 'An error occurred while retrieving devices.' });
+    await prisma.$disconnect()
+  }
+}
+
+async function saveDeviceStatuses(deviceStatus: BalenaDeviceStatus[]) {
+  try {
+    await checkHeartbeat().then(isRecent => {
+      if (isRecent) {
+        return
+      }
+      prisma.$transaction(
+        deviceStatus.map(device =>
+          prisma.deviceStatus.create({
+            data: {
+              deviceId: device.name, // Assuming 'name' is used as 'deviceId'
+              healthStatus: device.isOnline ? 'ONLINE' : 'OFFLINE',
+            },
+          })
+        )
+      );
+      updateHeartbeat()
+      console.log("successfully persisted devices")
+    }
+    )
+  } catch (error) {
+    console.error("Error inserting rows to the databse:", error)
+  }
+}
+
+async function getFrequentOfflineDevices(): Promise<BalenaDeviceStatus24hReport[]> {
+  try {
+    const result = await prisma.$queryRaw`
+      SELECT deviceId, DATE(createdAt) as date, COUNT(*) as offlineCount
+      FROM DeviceStatus
+      WHERE healthStatus = 'OFFLINE'
+      AND createdAt >= NOW() - INTERVAL 1 DAY
+      GROUP BY deviceId, DATE(createdAt)
+    `;
+    return result.map(row => ({
+      name: row.deviceId,
+      date: row.date.toISOString().split('T')[0], // Format date as 'YYYY-MM-DD'
+      offlineCount: Number(row.offlineCount),
+    }));
+  } catch (error) {
+    console.error("Error querying frequent offline devices:", error);
+    return [];
+  }
+}
+
+async function updateHeartbeat() {
+  try {
+    await prisma.heartbeat.upsert({
+      where: { id: 1 },
+      update: {},
+      create: { id: 1 },
+    });
+  } catch (error) {
+    console.error("Error updating heartbeat:", error);
+  }
+}
+
+async function checkHeartbeat() {
+  const heartbeat = await prisma.heartbeat.findUnique({
+    where: { id: 1 },
+  });
+
+  if (heartbeat) {
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    if (heartbeat.updatedAt > sixHoursAgo) {
+      console.log("Heartbeat is within the last 6 hours. Skipping generating more statuses");
+      return true;
+    } else {
+      console.log("Heartbeat is older than 6 hours.");
+      return false;
+    }
+  } else {
+    console.log("Heartbeat row does not exist.");
+    return false;
   }
 }
