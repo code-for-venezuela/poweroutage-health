@@ -13,7 +13,6 @@ type BalenaDeviceStatus = {
 
 type BalenaDeviceStatus24hReport = {
   name: string,
-  date: String,
   offlineCount: number,
 };
 
@@ -118,17 +117,16 @@ async function saveDeviceStatuses(deviceStatus: BalenaDeviceStatus[]) {
 async function getFrequentOfflineDevices(): Promise<BalenaDeviceStatus24hReport[]> {
   try {
     const result = await prisma.$queryRaw<any[]>`
-      SELECT deviceId as name, DATE(createdAt) as date, COUNT(*) as offlineCount
+      SELECT deviceId as name, COUNT(*) as offlineCount
       FROM DeviceStatus
       WHERE healthStatus = 'OFFLINE'
       AND createdAt >= NOW() - INTERVAL 1 DAY
-      GROUP BY deviceId, DATE(createdAt)
+      GROUP BY deviceId
     `;
 
     return result.map(row => {
       return {
         name: row.name,
-        date: row.date instanceof Date ? row.date.toISOString().split('T')[0] : row.date,
         offlineCount: typeof row.offlineCount === 'bigint' ? Number(row.offlineCount) : row.offlineCount,
       };
     });
