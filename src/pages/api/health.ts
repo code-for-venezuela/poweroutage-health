@@ -117,18 +117,21 @@ async function saveDeviceStatuses(deviceStatus: BalenaDeviceStatus[]) {
 
 async function getFrequentOfflineDevices(): Promise<BalenaDeviceStatus24hReport[]> {
   try {
-    const result = await prisma.$queryRaw`
-      SELECT deviceId, DATE(createdAt) as date, COUNT(*) as offlineCount
+    const result = await prisma.$queryRaw<any[]>`
+      SELECT deviceId as name, DATE(createdAt) as date, COUNT(*) as offlineCount
       FROM DeviceStatus
       WHERE healthStatus = 'OFFLINE'
       AND createdAt >= NOW() - INTERVAL 1 DAY
       GROUP BY deviceId, DATE(createdAt)
     `;
-    return result.map(row => ({
-      name: row.deviceId,
-      date: row.date.toISOString().split('T')[0], // Format date as 'YYYY-MM-DD'
-      offlineCount: Number(row.offlineCount),
-    }));
+
+    return result.map(row => {
+      return {
+        name: row.name,
+        date: row.date instanceof Date ? row.date.toISOString().split('T')[0] : row.date,
+        offlineCount: typeof row.offlineCount === 'bigint' ? Number(row.offlineCount) : row.offlineCount,
+      };
+    });
   } catch (error) {
     console.error("Error querying frequent offline devices:", error);
     return [];
