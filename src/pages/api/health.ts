@@ -34,7 +34,7 @@ export default async function handler(
       return { isOnline: is_online, name: device_name };
     });
 
-    saveDeviceStatuses(devices)
+    await saveDeviceStatuses(devices)
 
     const last24hReport = await getFrequentOfflineDevices()
 
