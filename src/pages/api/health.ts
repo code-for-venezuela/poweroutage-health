@@ -39,8 +39,9 @@ export default async function handler(
     const last24hReport = await getFrequentOfflineDevices()
 
     // Check if any device is offline
-    const filteredDevices = devices.filter((device: BalenaDeviceStatus24hReport) => !ignoredDevices.includes(device.name));
+    const filteredDevices = last24hReport.filter((device: BalenaDeviceStatus24hReport) => !ignoredDevices.includes(device.name));
     const offlineDevices = filteredDevices.filter((device: BalenaDeviceStatus24hReport) => device.offlineCount >= 3);
+    console.log(filteredDevices)
     //const onlineDevices = filteredDevices.filter((device:Device) => device.isOnline);
 
     if (offlineDevices.length > 0) {
@@ -51,7 +52,7 @@ export default async function handler(
         text: 'The following devices have been offline in the last 24 hours:',
         attachments: offlineDevices.map((device: BalenaDeviceStatus24hReport) => ({
           color: 'danger',
-          text: `${device.name} has been offline ${device.name} times in the last 24 hours`,
+          text: `${device.name} has been offline ${device.offlineCount} times in the last 24 hours`,
         })),
       };
 
@@ -140,7 +141,9 @@ async function updateHeartbeat() {
   try {
     await prisma.heartbeat.upsert({
       where: { id: 1 },
-      update: {},
+      update: {
+        updatedAt: new Date(),
+      },
       create: { id: 1 },
     });
   } catch (error) {
