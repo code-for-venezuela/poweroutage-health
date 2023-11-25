@@ -37,6 +37,7 @@ export default async function handler(
     await saveDeviceStatuses(devices)
 
     const last24hReport = await getFrequentOfflineDevices()
+    console.log("last 24hours report:", last24hReport)
 
     // Check if any device is offline
     const filteredDevices = last24hReport.filter((device: BalenaDeviceStatus24hReport) => !ignoredDevices.includes(device.name));
@@ -91,24 +92,25 @@ export default async function handler(
 
 async function saveDeviceStatuses(deviceStatus: BalenaDeviceStatus[]) {
   try {
-    await checkHeartbeat().then(isRecent => {
-      if (isRecent) {
-        return
-      }
-      prisma.$transaction(
-        deviceStatus.map(device =>
-          prisma.deviceStatus.create({
-            data: {
-              deviceId: device.name, // Assuming 'name' is used as 'deviceId'
-              healthStatus: device.isOnline ? 'ONLINE' : 'OFFLINE',
-            },
-          })
-        )
-      );
-      updateHeartbeat()
-      console.log("successfully persisted devices")
+    const isRecent = await checkHeartbeat();
+    if (isRecent) {
+      console.log("Heartbeat is recent. Skipping device status update.");
+      return;
     }
-    )
+    await prisma.$transaction(async (prisma) => {
+      // Perform all database operations within this transaction
+      for (const device of deviceStatus) {
+        await prisma.deviceStatus.create({
+          data: {
+            deviceId: device.name, // Assuming 'name' is used as 'deviceId'
+            healthStatus: device.isOnline ? 'ONLINE' : 'OFFLINE',
+          },
+        });
+      }
+      // Update heartbeat within the same transaction
+    });
+    await updateHeartbeat();
+    console.log("successfully persisted devices")
   } catch (error) {
     console.error("Error inserting rows to the databse:", error)
   }
