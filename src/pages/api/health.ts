@@ -41,7 +41,6 @@ export default async function handler(
     // Check if any device is offline
     const filteredDevices = last24hReport.filter((device: BalenaDeviceStatus24hReport) => !ignoredDevices.includes(device.name));
     const offlineDevices = filteredDevices.filter((device: BalenaDeviceStatus24hReport) => device.offlineCount >= 3);
-    console.log(filteredDevices)
     //const onlineDevices = filteredDevices.filter((device:Device) => device.isOnline);
 
     if (offlineDevices.length > 0) {
