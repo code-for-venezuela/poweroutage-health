@@ -34,7 +34,12 @@ export default async function handler(
       return { isOnline: is_online, name: device_name };
     });
 
-    await saveDeviceStatuses(devices)
+    const isRecent = await checkHeartbeat();
+
+
+    if (!isRecent) {
+      await saveDeviceStatuses(devices)
+    }
 
     const last24hReport = await getFrequentOfflineDevices()
     console.log("last 24hours report:", last24hReport)
@@ -56,24 +61,10 @@ export default async function handler(
         })),
       };
 
-      await axios.post(slackWebhookUrl, slackMessage);
+      if (!isRecent) {
+        await axios.post(slackWebhookUrl, slackMessage);
+      }
     }
-
-    // if (onlineDevices.length > 0) {
-    //   // Send notification to Slack channel using webhook integration
-    //   const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL || ''; 
-
-    //   const slackMessage = {
-    //     text: 'The following devices are currently online:',
-    //     attachments: onlineDevices.map((device:Device) => ({
-    //       color: '#097969',
-    //       text: `${device.name}`,
-    //     })),
-    //   };
-
-    //   await axios.post(slackWebhookUrl, slackMessage);
-    // }
-
 
     const responseBody = {
       devices: devices,
@@ -92,11 +83,6 @@ export default async function handler(
 
 async function saveDeviceStatuses(deviceStatus: BalenaDeviceStatus[]) {
   try {
-    const isRecent = await checkHeartbeat();
-    if (isRecent) {
-      console.log("Heartbeat is recent. Skipping device status update.");
-      return;
-    }
     await prisma.$transaction(async (prisma) => {
       // Perform all database operations within this transaction
       for (const device of deviceStatus) {
