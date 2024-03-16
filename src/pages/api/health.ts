@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import axios from 'axios';
 
 const prisma = new PrismaClient()
-const ignoredDevices = ['nameless-zombie', 'morning-apple'];
+const ignoredDevices = ['nameless-zombie', 'morning-apple', 'frosty-desert'];
 
 type BalenaDeviceStatus = {
   name: string,
