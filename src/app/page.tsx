@@ -15,7 +15,9 @@ export default function Home() {
         <div className={styles.container}>
           <h1 className={styles.title}>VEAC</h1>
           <nav>
-            <a href="/device-statuses" className={styles.navLink}>Dispositivos</a>
+            <Link href="/device-statuses" className={styles.button}>
+              Estado de Dispositivos
+            </Link>
           </nav>
         </div>
       </header>
