@@ -26,3 +26,19 @@ model Heartbeat {
   id        Int      @id @default(1)
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  eventType String   @map("event_type")
+  payload   Json
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model OutageEvent {
+  id        String   @id
+  status    String
+  startTime DateTime @map("start_time")
+  endTime   DateTime @map("end_time")
+  deviceId  String   @map("device_id")
+  createdAt DateTime @default(now()) @map("created_at")
+}
