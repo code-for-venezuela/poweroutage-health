@@ -54,7 +54,7 @@
 .footer {
     @apply bg-gray-800 text-white py-6 text-center;
     margin-top: auto;
-    /* Ensure footer is pushed to the bottom */
+    /* Keep this to push footer to the bottom */
 }
 
 .linksSection {
@@ -64,7 +64,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 25vh;
+    min-height: 30vh;
+    margin-bottom: 100px;
     /* Adjust the height to match the new grid section height */
 }
 

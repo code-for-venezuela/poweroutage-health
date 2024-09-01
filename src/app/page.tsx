@@ -14,7 +14,7 @@ export default function Home() {
         <div className={styles.container}>
           <h1 className={styles.title}>VEAC</h1>
           <nav>
-            <a href="#devices" className={styles.navLink}>Dispositivos</a>
+            <a href="/device-statuses" className={styles.navLink}>Dispositivos</a>
           </nav>
         </div>
       </header>
@@ -29,7 +29,7 @@ export default function Home() {
         <section className={styles.linksSection}>
           <h3 className={styles.linksHeading}>Explore nuestros servicios</h3>
           <div className={styles.buttonsContainer}>
-            <a href="/devices-status" className={styles.button}>Estado de Dispositivos</a>
+            <a href="/device-statuses" className={styles.button}>Estado de Dispositivos</a>
             <a href="/outages" className={styles.button}>Cortes</a>
           </div>
         </section>

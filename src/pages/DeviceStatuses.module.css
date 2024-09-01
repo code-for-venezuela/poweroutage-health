@@ -1,0 +1,100 @@
+/* DeviceStatuses.module.css */
+
+.header {
+    @apply bg-gray-800 shadow text-white;
+    /* Ensure the text color is white */
+}
+
+.title {
+    @apply text-xl font-bold text-white;
+    /* Ensure the title text color is white */
+}
+
+.main {
+    @apply relative bg-gray-900 text-white;
+    /* Match the background and text color of the main page */
+}
+
+.contentSection {
+    @apply py-16 text-white;
+    /* Ensure content section text is white */
+}
+
+.heading {
+    @apply text-3xl font-extrabold mb-8 text-white;
+    /* Ensure the heading text color is white */
+}
+
+.description {
+    @apply text-lg mb-12 text-white;
+    /* Ensure the description text color is white */
+}
+
+
+.container {
+    @apply mx-auto px-4 py-6 flex justify-between items-center;
+}
+
+.deviceList {
+    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3;
+    /* Use a grid layout for displaying devices */
+}
+
+.footer {
+    @apply bg-gray-800 text-white py-6 text-center;
+    margin-top: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+}
+
+.table td {
+    background-color: #444;
+}
+
+.table tr:nth-child(even) td {
+    background-color: #555;
+}
+
+/* Loading Indicator */
+.loadingIndicator {
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #ccc;
+}
+
+/* Animation for new events */
+.eventRow {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.table tr:nth-child(even) td {
+    background-color: #555;
+}
