@@ -1,0 +1,30 @@
+<svg width="4000" height="2000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1" cx="100" cy="100" fx="200" fy="200" gradientUnits="userSpaceOnUse" gradientTransform="translate(1400,1500)">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="g2" gradientTransform="rotate(90)">
+      <stop offset="0%" stop-color="#00000000" />
+      <stop offset="95%" stop-color="#00000000" />
+      <stop offset="100%" stop-color="#000000" />
+    </linearGradient>
+    <linearGradient id="g3" gradientTransform="rotate(-25)">
+      <stop offset="0%" stop-color="#FFFFFF00" />
+      <stop offset="50%" stop-color="#FFFFFF00" />
+      <stop offset="100%" stop-color="#FFF" />
+    </linearGradient>
+
+    <pattern id="grid" x="20" y="0" width="48" height="48" patternUnits="userSpaceOnUse">
+      <rect x="2" y="2" width="44" height="44" rx="4" fill="#7F4EFF2A" />
+    </pattern>
+  </defs>
+
+  <mask id="mask" x="0" y="0" width="4000" height="2000">
+    <rect fill="url(#g1)" width="4000" height="2000" />
+    <rect fill="url(#g2)" width="4000" height="2000" />
+    <rect fill="url(#g3)" width="4000" height="2000" />
+  </mask>
+
+  <rect fill="url(#grid)" mask="url(#mask)" width="4000" height="2000"  />
+</svg>

@@ -1,0 +1,48 @@
+/* page.module.css */
+.container {
+    @apply mx-auto px-4 py-6 flex justify-between items-center;
+}
+
+.header {
+    @apply bg-gray-800 shadow;
+}
+
+.title {
+    @apply text-xl font-bold;
+}
+
+.navLink {
+    @apply text-gray-300 hover:text-gray-100 ml-4;
+}
+
+.main {
+    @apply relative;
+}
+
+.gridBackground {
+    background-image: url('/images/purple-grid-background.svg');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: contain;
+    height: 160px;
+}
+
+.section {
+    @apply relative text-center py-40;
+}
+
+.heading {
+    @apply text-4xl font-extrabold;
+}
+
+.subText {
+    @apply mt-4 text-lg;
+}
+
+.button {
+    @apply bg-indigo-600 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-500;
+}
+
+.footer {
+    @apply bg-gray-800 text-white py-6 text-center;
+}
