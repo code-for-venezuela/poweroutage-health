@@ -1,4 +1,5 @@
 import styles from './page.module.css';
+import Link from 'next/link';
 import Head from 'next/head';
 
 export default function Home() {
@@ -29,8 +30,12 @@ export default function Home() {
         <section className={styles.linksSection}>
           <h3 className={styles.linksHeading}>Explore nuestros servicios</h3>
           <div className={styles.buttonsContainer}>
-            <a href="/device-statuses" className={styles.button}>Estado de Dispositivos</a>
-            <a href="/outages" className={styles.button}>Cortes</a>
+            <Link href="/device-statuses" className={styles.button}>
+              Estado de Dispositivos
+            </Link>
+            <Link href="/outages" className={styles.button}>
+              Cortes
+            </Link>
           </div>
         </section>
       </main>
