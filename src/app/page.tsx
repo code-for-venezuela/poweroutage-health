@@ -25,6 +25,14 @@ export default function Home() {
           <p className={styles.subText}>La solución al seguimiento del estado de la energía en Venezuela.</p>
 
         </section>
+
+        <section className={styles.linksSection}>
+          <h3 className={styles.linksHeading}>Explore nuestros servicios</h3>
+          <div className={styles.buttonsContainer}>
+            <a href="/devices-status" className={styles.button}>Estado de Dispositivos</a>
+            <a href="/outages" className={styles.button}>Cortes</a>
+          </div>
+        </section>
       </main>
 
       <footer className={styles.footer}>
