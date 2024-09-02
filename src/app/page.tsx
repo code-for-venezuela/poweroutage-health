@@ -16,7 +16,7 @@ export default function Home() {
           <h1 className={styles.title}>VEAC</h1>
           <nav>
             <Link href="/device-statuses" className={styles.button}>
-              Estado de Dispositivos
+              Dashboard Operativo
             </Link>
           </nav>
         </div>

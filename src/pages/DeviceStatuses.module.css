@@ -17,12 +17,20 @@
 
 .contentSection {
     @apply py-16 text-white;
-    /* Ensure content section text is white */
+    padding-top: 20px;
+    padding-bottom: 0;
 }
 
 .heading {
     @apply text-3xl font-extrabold mb-8 text-white;
-    /* Ensure the heading text color is white */
+    padding-left: 16px;
+    /* Match this padding with the table container's padding */
+    padding-right: 16px;
+    /* Optional: if you want to align the right edge too */
+    margin-top: 0;
+    /* Remove extra margin if any */
+    margin-bottom: 16px;
+    /* Adjust this margin to control spacing between the heading and the table */
 }
 
 .description {
@@ -44,6 +52,15 @@
     @apply bg-gray-800 text-white py-6 text-center;
     margin-top: auto;
 }
+
+.tableContainer {
+    padding-left: 16px;
+    /* Adjust the padding as needed */
+    padding-right: 16px;
+    margin: 0 auto;
+    /* Center the table horizontally */
+}
+
 
 .table {
     width: 100%;

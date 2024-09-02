@@ -1,0 +1,128 @@
+/* DeviceStatuses.module.css */
+
+
+.heading {
+    @apply text-3xl font-extrabold mb-8 text-white;
+    padding-left: 16px;
+    /* Match this padding with the table container's padding */
+    padding-right: 16px;
+    /* Optional: if you want to align the right edge too */
+    margin-top: 0;
+    /* Remove extra margin if any */
+    margin-bottom: 16px;
+    /* Adjust this margin to control spacing between the heading and the table */
+}
+
+.tableContainer {
+    padding-left: 16px;
+    /* Adjust the padding as needed */
+    padding-right: 16px;
+    margin: 0 auto;
+    /* Center the table horizontally */
+}
+
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    /* This ensures that borders are shared between cells, creating continuous column borders */
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    text-align: left;
+    padding: 16px;
+}
+
+.table thead th {
+    background-color: #f3f4f6;
+    /* Light gray background for header */
+    font-weight: 600;
+    color: #374151;
+    /* Dark gray text for header */
+    text-transform: uppercase;
+    font-size: 12px;
+    border-bottom: 2px solid #e5e7eb;
+    /* Light gray border at the bottom of the header */
+}
+
+.table tbody tr {
+    background-color: #ffffff;
+    /* White background for rows */
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb;
+    /* Very light gray on hover */
+}
+
+.table th,
+.table td {
+    border-right: 1px solid #e5e7eb;
+    /* Light gray vertical borders between columns */
+    border-left: 1px solid #e5e7eb;
+}
+
+.table th:first-child,
+.table td:first-child {
+    border-left: none;
+    /* Remove left border for the first column */
+}
+
+.table th:last-child,
+.table td:last-child {
+    border-right: none;
+    /* Remove right border for the last column */
+}
+
+.table tbody td {
+    color: #374151;
+    /* Dark gray text for table body */
+    border-bottom: 1px solid #e5e7eb;
+    /* Light gray bottom border between rows */
+}
+
+.loadingIndicator {
+    text-align: center;
+    padding: 20px;
+    color: #9ca3af;
+    /* Light gray color for the loading indicator */
+}
+
+.contentSection {
+    @apply py-16 text-white;
+    /* Adjust this value to reduce or increase spacing between sections */
+    /* Ensure content section text is white */
+    padding-bottom: 0;
+}
+
+.statusRestarting {
+    background-color: #FBD38D;
+    /* Light orange */
+    color: #9C4221;
+    /* Darker text for contrast */
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+}
+
+.statusHealthy {
+    background-color: #68D391;
+    /* Green */
+    color: #2F855A;
+    /* Darker green text */
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+}
+
+.statusOffline {
+    background-color: #FEB2B2;
+    /* Light red */
+    color: #C53030;
+    /* Darker red text */
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+}

@@ -4,7 +4,12 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { cursor, take } = req.query;
+    const { cursor, take, deviceIds } = req.query;
+    let deviceIdsArray: string[] = []
+    if (deviceIds !== undefined) {
+        deviceIdsArray = Array.isArray(deviceIds) ? deviceIds : [deviceIds];
+    }
+
 
     // Default pagination settings
     const takeNumber = parseInt(take as string) || 10; // Number of items per page
@@ -26,6 +31,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             where: {
                 eventType: 'power_outage_probe', // Filter by the correct event type
                 createdAt: cursorDate ? { lt: cursorDate } : undefined, // Paginate by createdAt with lt (less than) condition
+                ...(deviceIdsArray.length > 0 ? {
+                    OR: deviceIdsArray.map(id => ({
+                        payload: {
+                            path: 'device_id',
+                            equals: id
+                        }
+                    }))
+                } : {}),
             },
             orderBy: {
                 createdAt: 'desc', // Order by createdAt descending for newest first

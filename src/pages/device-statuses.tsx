@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import styles from './DeviceStatuses.module.css';
+import DeviceStatusSection from '@/components/DeviceStatusSection';
 
 interface Event {
     id: string;
     payload: {
-        restart: boolean;
+        status: string;
         device_id: string;
+        sent_at: string;
     };
     createdAt: string;
 }
@@ -52,42 +54,49 @@ export default function DeviceStatuses() {
     return (
         <div className="bg-gray-900 min-h-screen text-white">
             <Head>
-                <title>Estado de Dispositivos</title>
+                <title>Dashboard Operativo</title>
                 <meta name="description" content="Estado actual de los dispositivos monitoreados" />
             </Head>
 
             <header className={styles.header}>
                 <div className={styles.container}>
-                    <h1 className={styles.title}>Estado de Dispositivos</h1>
+                    <h1 className={styles.title}>Dashboard Operativo</h1>
                 </div>
             </header>
 
             <main className={styles.main}>
-                <section className={styles.contentSection}>
-                    <h2 className={styles.heading}>Dispositivos Monitoreados</h2>
 
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Device ID</th>
-                                <th>Restart</th>
-                                <th>Created At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {events.map((event, index) => (
-                                <tr
-                                    key={event.id}
-                                    ref={index === events.length - 1 ? lastEventElementRef : null}
-                                    className={styles.eventRow}
-                                >
-                                    <td>{event.payload.device_id}</td>
-                                    <td>{event.payload.restart ? 'Yes' : 'No'}</td>
-                                    <td>{new Date(event.createdAt).toLocaleString()}</td>
+                {/* Include the DeviceStatusSection component here */}
+                <section className={styles.contentSection}>
+                    <DeviceStatusSection />
+                </section>
+
+                <section className={styles.contentSection}>
+                    <h2 className={styles.heading}>Logs de todos los dispostivos</h2>
+                    <div className={styles.tableContainer}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Device ID</th>
+                                    <th>Status</th>
+                                    <th>Created At</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {events.map((event, index) => (
+                                    <tr
+                                        key={event.id}
+                                        ref={index === events.length - 1 ? lastEventElementRef : null}
+                                        className={styles.eventRow}
+                                    >
+                                        <td>{event.payload.device_id}</td>
+                                        <td>{event.payload.status} </td>
+                                        <td>{new Date(event.payload.sent_at).toLocaleString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
                     {loading && <p className={styles.loadingIndicator}>Loading more events...</p>}
                 </section>
