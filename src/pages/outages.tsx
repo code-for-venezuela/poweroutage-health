@@ -15,7 +15,7 @@ const Outages: React.FC<OutagesProps> = ({ initialCoordinates = [10.48801, -66.8
 
     return (
         <>
-            <h1>Map Centered in Venezuela</h1>
+            <h1>Estado Actual Energía</h1>
             <div>
                 <Map />
             </div>
