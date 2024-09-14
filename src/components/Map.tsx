@@ -3,7 +3,11 @@ import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
 import type { Feature, FeatureCollection, Polygon } from 'geojson';
 import * as turf from '@turf/turf';
 import L, { PathOptions, StyleFunction } from 'leaflet';
+import { toast, ToastContainer } from 'react-toastify'; // <-- Import toast
+import 'react-toastify/dist/ReactToastify.css';
+
 const MUNICIPALITIES_BASE_URL = '/geo_json_venezuela/municipios/municipios_estado_';
+
 const Map: React.FC = () => {
     const [geoData, setGeoData] = useState<FeatureCollection | null>(null);
     const [highlightedStates, setHighlightedStates] = useState<Set<string>>(new Set());
@@ -19,6 +23,7 @@ const Map: React.FC = () => {
                 setGeoData(data);
             } catch (error) {
                 console.error('Error fetching GeoJSON data:', error);
+                toast.error('Error cargando estados');
             }
         };
         fetchGeoJSON();
@@ -55,7 +60,6 @@ const Map: React.FC = () => {
     }, [geoData]);
     // Fetch Municipalities GeoJSON data based on selectedStateId
     useEffect(() => {
-        console.log("selectedStateId", selectedStateId)
         if (selectedStateId === null) {
             setMunicipalitiesData(null);
             return;
@@ -66,14 +70,15 @@ const Map: React.FC = () => {
                 const data: FeatureCollection = await response.json();
                 setMunicipalitiesData(data);
             } catch (error) {
+                // Start of Selection
                 console.error('Error fetching Municipalities GeoJSON data:', error);
+                toast.error('Error cargando Municipios');
             }
         };
         fetchMunicipalities();
     }, [selectedStateId]);
     const styleFeature = useCallback<StyleFunction>((feature) => {
         // Define styles
-        console.log("ThIS is running", feature)
         const defaultStyle: PathOptions = {
             color: '#3388ff',
             weight: 2,
@@ -129,7 +134,6 @@ const Map: React.FC = () => {
             },
             click: (e: any) => {
                 const map = e.target._map;
-                console.log("seeting state id", objectId)
                 setSelectedStateId(objectId);
             },
         });
@@ -139,7 +143,6 @@ const Map: React.FC = () => {
         useMapEvents({
             click: (e) => {
                 // Deselect state if click occurs on the map (not on a feature)
-                console.log("deselecting state")
                 if (municipalitiesData) {
                     setMunicipalitiesData(null);
                     setSelectedStateId(null);
@@ -177,7 +180,6 @@ const Map: React.FC = () => {
 
     // Event handlers for municipalities features (if any)
     const onEachMunicipalityFeature = (feature: any, layer: any) => {
-        console.log("Municipality Feature", feature)
         const municipalityName = feature.properties?.MUNICIPIO as string;
         if (municipalityName) {
             layer.bindTooltip(municipalityName);
@@ -216,8 +218,9 @@ const Map: React.FC = () => {
                 style={{ height: '100vh', width: '100%' }}
             >
                 <TileLayer
-                    attribution='&copy; OpenStreetMap contributors'
-                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    attribution='Open Street Map'
+
+                    url='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
                 />
                 {/* States Layer */}
                 {selectedStateId === null && geoData && (
@@ -236,6 +239,7 @@ const Map: React.FC = () => {
                     />
                 )}
                 <MapClickHandler />
+                <ToastContainer />
             </MapContainer>
         </>
 
