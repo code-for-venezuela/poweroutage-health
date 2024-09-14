@@ -65,7 +65,6 @@ const Map: React.FC = () => {
                 const response = await fetch(`${MUNICIPALITIES_BASE_URL}${selectedStateId}.json`);
                 const data: FeatureCollection = await response.json();
                 setMunicipalitiesData(data);
-                setGeoData(null);
             } catch (error) {
                 console.error('Error fetching Municipalities GeoJSON data:', error);
             }
@@ -111,7 +110,7 @@ const Map: React.FC = () => {
         }
     }, [highlightedStates]);
     // Event handlers for each feature
-    const onEachFeature = useCallback((feature: any, layer: any) => {
+    const onEachFeature = (feature: any, layer: any) => {
         const stateName = feature.properties?.NAME as string;
         const objectId = feature.properties?.OBJECTID as number;
         if (stateName) {
@@ -134,34 +133,51 @@ const Map: React.FC = () => {
                 setSelectedStateId(objectId);
             },
         });
-    }, [styleFeature]);
+    };
     // Handle map clicks outside features
-    // const MapClickHandler: React.FC = () => {
-    //     useMapEvents({
-    //         click: (e) => {
-    //             // Deselect state if click occurs on the map (not on a feature)
-    //             console.log("this is being called")
-    //             setSelectedStateId(null);
-    //         },
-    //         zoomend: (e) => {
-    //             const map = e.target;
-    //             const newZoom = map.getZoom();
-    //             setCurrentZoom(newZoom);
-    //             // Define a zoom threshold for switching layers
-    //             const zoomThreshold = 10; // Adjust as needed
-    //             if (selectedStateId === null && newZoom >= zoomThreshold) {
-    //                 // Optionally, handle auto-selection based on zoom
-    //                 // For simplicity, this example does not auto-select a state
-    //             }
-    //         },
-    //     });
-    //     return null;
-    // };
+    const MapClickHandler: React.FC = () => {
+        useMapEvents({
+            click: (e) => {
+                // Deselect state if click occurs on the map (not on a feature)
+                console.log("deselecting state")
+                if (municipalitiesData) {
+                    setMunicipalitiesData(null);
+                    setSelectedStateId(null);
+                }
+            },
+            zoomend: (e) => {
+                const map = e.target;
+                const newZoom = map.getZoom();
+                setCurrentZoom(newZoom);
+                // Define a zoom threshold for switching layers
+                const zoomThreshold = 10; // Adjust as needed
+                // Start of Selection
+                if (selectedStateId === null && newZoom >= zoomThreshold && geoData) {
+                    const map = e.target;
+                    const center = map.getCenter();
+                    const centerPoint = turf.point([center.lng, center.lat]);
+
+                    const foundFeature = geoData.features.find((feature) => {
+                        const geomType = feature.geometry.type;
+                        if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
+                            return turf.booleanPointInPolygon(centerPoint, feature as Feature<Polygon>);
+                        }
+                        return false;
+                    });
+
+                    if (foundFeature && foundFeature.properties?.OBJECTID != null) {
+                        setSelectedStateId(foundFeature.properties.OBJECTID);
+                    }
+                }
+            },
+        });
+        return null;
+    };
     // Conditional rendering based on selectedStateId
 
     // Event handlers for municipalities features (if any)
-    const onEachMunicipalityFeature = useCallback((feature: any, layer: any) => {
-        console.log("Municipality Feature", feature);
+    const onEachMunicipalityFeature = (feature: any, layer: any) => {
+        console.log("Municipality Feature", feature)
         const municipalityName = feature.properties?.MUNICIPIO as string;
         if (municipalityName) {
             layer.bindTooltip(municipalityName);
@@ -182,54 +198,18 @@ const Map: React.FC = () => {
                 target.setStyle(styleFeature(target.feature));
             },
             click: (e: any) => {
+                // Implement any additional click behavior for municipalities if needed
                 const map = e.target._map;
                 map.fitBounds(e.target.getBounds());
             },
         });
-    }, [styleFeature]);
-
-    const [statesLayerGroup, setStatesLayerGroup] = useState<L.LayerGroup | null>(null);
-    const [municipalitiesLayerGroup, setMunicipalitiesLayerGroup] = useState<L.LayerGroup | null>(null);
-
-    const onMapLoad = (map: L.Map) => {
-        const newStatesLayerGroup = L.layerGroup().addTo(map);
-        const newMunicipalitiesLayerGroup = L.layerGroup().addTo(map);
-        setStatesLayerGroup(newStatesLayerGroup);
-        setMunicipalitiesLayerGroup(newMunicipalitiesLayerGroup);
     };
-
-    useEffect(() => {
-        if (!geoData || !statesLayerGroup) return;
-
-        statesLayerGroup.clearLayers(); // Clear previous layers
-
-        L.geoJSON(geoData, {
-            style: styleFeature,
-            onEachFeature: onEachFeature,
-        }).addTo(statesLayerGroup);
-    }, [geoData, onEachFeature, statesLayerGroup, styleFeature]);
-
-    useEffect(() => {
-        if (!municipalitiesData || !municipalitiesLayerGroup) return;
-
-        municipalitiesLayerGroup.clearLayers(); // Clear previous layers
-
-        L.geoJSON(municipalitiesData, {
-            style: styleFeature,
-            onEachFeature: onEachMunicipalityFeature,
-        }).addTo(municipalitiesLayerGroup);
-    }, [municipalitiesData, municipalitiesLayerGroup, onEachMunicipalityFeature, styleFeature]);
-
     if (!geoData && !municipalitiesData) {
         return <div>Cargando Mapa...</div>;
     }
 
-
     return (
         <>
-            <p>
-                This is the value: {selectedStateId && !!municipalitiesData ? "true" : "false"}
-            </p>
             <MapContainer
                 center={[6.42375, -66.58973]}
                 zoom={6}
@@ -255,6 +235,7 @@ const Map: React.FC = () => {
                         onEachFeature={onEachMunicipalityFeature}
                     />
                 )}
+                <MapClickHandler />
             </MapContainer>
         </>
 
