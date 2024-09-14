@@ -7,15 +7,12 @@ const Map = dynamic(() => import('../components/Map'), {
     ssr: false, // Disable server-side rendering for this import
 });
 
-interface OutagesProps {
-    initialCoordinates?: [number, number]; // Optional prop for initial coordinates
-}
-
-const Outages: React.FC<OutagesProps> = ({ initialCoordinates = [10.48801, -66.87919] }) => {
+const Outages: React.FC = () => {
 
     return (
         <>
             <h1>Estado Actual Energía</h1>
+            <p>Estado de las subestaciones</p>
             <div>
                 <Map />
             </div>
