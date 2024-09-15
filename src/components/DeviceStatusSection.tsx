@@ -96,7 +96,6 @@ const DeviceStatusSection = () => {
 
     return (
         <div>
-            <h2 className={styles.heading}> Estado Actual De los Monitores </h2>
             <div className={styles.tableContainer}>
                 <table className={styles.table}>
                     <thead>

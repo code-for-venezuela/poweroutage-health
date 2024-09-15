@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, useMapEvents } from 'react-leaflet';
 import type { Feature, FeatureCollection, Polygon } from 'geojson';
 import * as turf from '@turf/turf';
 import L, { PathOptions, StyleFunction } from 'leaflet';
-import { toast, ToastContainer } from 'react-toastify'; // <-- Import toast
+import { toast } from "sonner";
 import 'react-toastify/dist/ReactToastify.css';
 
 const MUNICIPALITIES_BASE_URL = '/geo_json_venezuela/municipios/municipios_estado_';
@@ -239,7 +239,6 @@ const Map: React.FC = () => {
                     />
                 )}
                 <MapClickHandler />
-                <ToastContainer />
             </MapContainer>
         </>
 
