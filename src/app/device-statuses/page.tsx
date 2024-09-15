@@ -28,8 +28,11 @@ export default function DeviceStatuses() {
     const [cursor, setCursor] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const observer = useRef<IntersectionObserver>();
+    const hasFetched = useRef(false);
 
     const fetchEvents = async (cursor: string | null = null) => {
+        if (hasFetched.current && cursor === null) return; // Prevent duplicate fetches for cursor=null
+        hasFetched.current = true
         setLoading(true);
         try {
             const res = await fetch(`/api/device-statuses?cursor=${cursor}`);
@@ -61,7 +64,6 @@ export default function DeviceStatuses() {
         [loading, cursor]
     );
 
-
     return (
         <>
             <Breadcrumbs pageName={pageData?.name} />
@@ -79,6 +81,7 @@ export default function DeviceStatuses() {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
+                                        <th>Event ID</th>
                                         <th>Device ID</th>
                                         <th>Status</th>
                                         <th>Created At</th>
@@ -87,10 +90,11 @@ export default function DeviceStatuses() {
                                 <tbody>
                                     {events.map((event, index) => (
                                         <tr
-                                            key={event.id}
+                                            key={`logs-${event.id}`}
                                             ref={index === events.length - 1 ? lastEventElementRef : null}
                                             className={styles.eventRow}
                                         >
+                                            <td>{event.id}</td>
                                             <td>{event.payload.device_id}</td>
                                             <td>{event.payload.status} </td>
                                             <td>{new Date(event.payload.sent_at).toLocaleString()}</td>
