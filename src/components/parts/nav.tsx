@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ModeToggle } from "@/components/parts/mode-toggle";
 
 // Image Imports
-import Logo from "../../../public/logo.svg";
+import Logo from "@public/logo.svg";
 
 // Icon Imports
 import { BarChart, Logs, Router } from "lucide-react";
@@ -21,13 +21,14 @@ export default function Nav() {
         href="/"
         className="border bg-muted/50 flex items-center gap-2 rounded-lg p-6"
       >
-        <Image
+        <p>VEAC</p>
+        {/* <Image
           className="dark:invert -mt-px mb-px"
           src={Logo}
           width={100}
           height={18.53}
           alt="Router.so Wordmark"
-        />
+        /> */}
       </Link>
       <div className="border bg-muted/50 rounded-lg flex flex-col justify-between p-6 h-full">
         <div className="flex flex-col gap-8">
